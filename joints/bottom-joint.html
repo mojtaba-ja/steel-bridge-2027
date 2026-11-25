@@ -7,7 +7,7 @@
 <title>Build guide: bottom joint at each post | FAU Steel Bridge 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/site.css?v=10">
+<link rel="stylesheet" href="../assets/css/site.css?v=12">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b2545'/%3E%3Cpath d='M4 22h24M7 22l5-10h8l5 10M12 12l4 10 4-10' stroke='%23f2a541' stroke-width='2.4' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
   .head { background: linear-gradient(180deg, #0b2545, #13315c); color: #fff; padding: 22px 18px 20px; }
@@ -17,7 +17,7 @@
   .guide { display: grid; grid-template-columns: 1fr 330px; gap: 14px; margin-top: 16px; }
   .guide > * { min-width: 0; }
   @media (max-width: 900px) { .guide { grid-template-columns: 1fr; } }
-  .stage { position: relative; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; height: min(66vh, 650px); touch-action: none; box-shadow: var(--shadow); }
+  .stage { position: relative; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; height: min(66vh, 650px); box-shadow: var(--shadow); }
   @media (max-width: 900px) { .stage { height: 54vh; } }
   #c { width: 100%; height: 100%; display: block; }
   .lab { position: absolute; transform: translate(-50%, -50%); pointer-events: none; white-space: nowrap; font-size: 14px; font-weight: 700;
@@ -28,7 +28,7 @@
   .vtools button { font: inherit; font-size: 14px; font-weight: 650; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line);
     background: rgba(255,255,255,.95); color: var(--ink); cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
   .vtools button.on { background: #b03020; border-color: #b03020; color: #fff; }
-  .card2 { position: absolute; right: 10px; top: 10px; width: min(330px, calc(100% - 20px)); z-index: 6; background: #fff; border: 1px solid var(--line);
+  .card2 { position: absolute; right: 10px; top: 10px; width: min(330px, calc(100% - 20px)); z-index: 7; background: #fff; border: 1px solid var(--line);
     border-radius: 12px; box-shadow: 0 6px 24px rgba(16,24,40,.18); padding: 12px 14px; display: none; }
   .card2 h4 { margin: 0 26px 6px 0; font-size: 16px; }
   .card2 table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
@@ -89,6 +89,20 @@
   .sheets a { display: block; background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; color: var(--ink); text-decoration: none; box-shadow: var(--shadow); }
   .sheets img { width: 100%; border-bottom: 1px solid var(--line); }
   .sheets span { display: block; padding: 8px 10px; font-size: 14px; }
+  .thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  @media (max-width: 700px) { .thumbs { grid-template-columns: repeat(2, 1fr); } }
+  .thumbs button { font: inherit; padding: 0; border: 1px solid var(--line); border-radius: 10px; background: #fff; overflow: hidden; cursor: zoom-in; text-align: left; box-shadow: var(--shadow); }
+  .thumbs img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: top; display: block; border-bottom: 1px solid var(--line); }
+  .thumbs span { display: block; padding: 6px 10px; font-size: 13.5px; font-weight: 650; }
+  .lightbox { position: fixed; inset: 0; z-index: 100; background: rgba(8,15,28,.92); display: none; }
+  .lightbox.on { display: block; }
+  .lightbox .lbin { position: absolute; inset: 0; overflow: auto; -webkit-overflow-scrolling: touch; display: flex; align-items: flex-start; justify-content: center; padding: 50px 8px 20px; }
+  .lightbox img { max-width: none; width: min(1700px, 96vw); height: auto; background: #fff; border-radius: 6px; cursor: zoom-in; }
+  .lightbox img.zoom { width: 1700px; cursor: zoom-out; }
+  .lightbox .lbin:has(img.zoom) { justify-content: flex-start; }
+  .lbhint { position: fixed; left: 0; right: 0; bottom: 14px; text-align: center; color: #cfd8e3; font-size: 13px; pointer-events: none; }
+  .lbx { position: fixed; top: 8px; right: 10px; z-index: 101; width: 44px; height: 44px; font-size: 30px; line-height: 1; border: none; border-radius: 50%; background: rgba(8,15,28,.8); color: #fff; cursor: pointer; padding: 0; }
+  .lightbox:has(img.zoom) .lbhint { display: none; }
   .files a.btn { display: inline-block; margin: 4px 8px 4px 0; padding: 9px 14px; border-radius: 9px; background: #fff; border: 1px solid var(--line); text-decoration: none; font-weight: 650; color: var(--navy2); }
 </style>
 <script type="importmap">
@@ -130,7 +144,17 @@
       <details class="steps" id="stepsbox"><summary>All 29 steps</summary><div class="list" id="list"></div></details>
     </div>
   </div>
-  <p style="margin:18px 2px 0"><a href="files/Bottom-joint-sheets.pdf"><b>Print the sheets (PDF) &rarr;</b></a></p>
+  <section class="block" style="padding-top:28px">
+    <h2 style="font-size:20px">Drawings</h2>
+    <div class="thumbs">
+      <button data-src="sheets/A-shop-drawing.png"><img src="sheets/A-shop-drawing-thumb.jpg" alt="Shop drawing"><span>Sizes</span></button>
+      <button data-src="sheets/B-parts-to-cut-and-drill.png"><img src="sheets/B-parts-to-cut-and-drill-thumb.jpg" alt="Parts"><span>Parts</span></button>
+      <button data-src="sheets/C-shop-steps.png"><img src="sheets/C-shop-steps-thumb.jpg" alt="Shop steps"><span>Shop</span></button>
+      <button data-src="sheets/D-competition-day-steps.png"><img src="sheets/D-competition-day-steps-thumb.jpg" alt="Competition day"><span>Bolting</span></button>
+    </div>
+    <p style="margin:12px 2px 0"><a href="files/Bottom-joint-sheets.pdf"><b>Print all (PDF) &rarr;</b></a></p>
+  </section>
+  <div class="lightbox" id="lightbox"><button class="lbx" aria-label="Close">&times;</button><div class="lbin"><img id="lbimg" alt=""></div><div class="lbhint">Tap the drawing to zoom</div></div>
 </main>
 <footer><div class="in">
   <div>FAU ASCE Student Steel Bridge Team, Florida Atlantic University</div>
@@ -147,11 +171,27 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
+// ---- phones: the page scrolls over the 3D view until the user taps "Tap to turn"; rendering pauses off screen
+function touchLock(box, canvas, controls) {
+  const touch = matchMedia('(pointer: coarse)').matches;
+  const state = { visible: true, touch };
+  new IntersectionObserver(es => { state.visible = es[0].isIntersecting; if (!state.visible && touch) lock(); }, { threshold: 0.05 }).observe(box);
+  if (!touch) return state;
+  const btn = document.createElement('button'); btn.className = 'tapturn'; btn.type = 'button';
+  box.appendChild(btn);
+  function lock() { controls.enabled = false; canvas.style.touchAction = 'pan-y'; btn.textContent = '\u261D Tap to turn'; btn.classList.remove('on'); }
+  function unlock() { controls.enabled = true; canvas.style.touchAction = 'none'; btn.textContent = '\u2713 Done'; btn.classList.add('on'); }
+  btn.addEventListener('click', e => { e.stopPropagation(); controls.enabled ? lock() : unlock(); });
+  lock();
+  return state;
+}
+
+
 // ------------------------------------------------------------------ scene setup
 const viewer = document.getElementById('viewer'), canvas = document.getElementById('c');
 const DEBUG = location.search.includes('debug');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: DEBUG });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, matchMedia('(pointer: coarse)').matches ? 1.5 : 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene(); scene.background = new THREE.Color(0xf3f5f8);
@@ -160,12 +200,13 @@ scene.environmentIntensity = 0.85;
 const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 500);
 scene.add(camera);
 scene.add(new THREE.HemisphereLight(0xffffff, 0xc9cfd8, 0.55));
-const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.castShadow = true; sun.shadow.mapSize.setScalar(matchMedia('(pointer: coarse)').matches ? 1024 : 2048);
 sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.02; sun.shadow.radius = 4; scene.add(sun, sun.target);
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.ShadowMaterial({ opacity: 0.22 }));
 ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true; controls.dampingFactor = 0.12; controls.screenSpacePanning = true;
+const vis = touchLock(viewer, canvas, controls);
 const useAO = !location.search.includes('noao') && Math.min(window.innerWidth, window.innerHeight) > 600;
 const composer = new EffectComposer(renderer); composer.addPass(new RenderPass(scene, camera));
 let gtao = null;
@@ -350,7 +391,7 @@ function holesOf(o) { const name = o.userData.name.replace(' raw', ''); return D
 // ------------------------------------------------------------------ the steps
 const STEPS = [];
 const SEC = { Cut: '#4b5563', Drill: '#1d4ed8', Slot: '#6d28d9', Weld: '#c2410c', Bolt: '#047857' };
-const TOOL = { saw: 'Chop saw', drill: 'Drill press, 5/16 in bit', grinder: 'Angle grinder, thin cut-off disc', weld: 'Welder (shop)', bolt: 'Impact driver and wrench (competition day)', none: '' };
+const TOOL = { saw: 'Chop saw', drill: 'Drill press, 5/16 in bit', grinder: 'Angle grinder, thin cut-off disc', weld: 'Welder (shop)', bolt: 'Impact driver (competition day)', none: '' };
 function S(sec, tool, cap, sub, view, build) { STEPS.push({ sec, tool, cap, sub, view, build }); }
 const EDGE_FIN = ['chord', 'stub', 'stringer', 'post plate 1', 'post plate 2', 'diag plate R1', 'diag plate R2', 'diag plate L1', 'diag plate L2'];
 const add = (ctx, names) => names.forEach(n => ctx.add(part(n)));
@@ -563,6 +604,7 @@ window.addEventListener('keydown', e => { if (e.key === 'ArrowRight') go(cur + 1
 const v3 = new THREE.Vector3();
 function frame(now) {
   requestAnimationFrame(frame);
+  if (!vis.visible) return;
   if (STEP) { const t = Math.min(1, (now - t0) / (DUR * 1000)); STEP.ctx.ticks.forEach(f => f(t));
     if (cam.t < 1) { cam.t = Math.min(1, cam.t + 0.06); const u = ease(cam.t); camera.position.lerpVectors(cam.fp, cam.pos, u); controls.target.lerpVectors(cam.ft, cam.tgt, u); } }
   controls.update(); composer.render();
@@ -572,6 +614,12 @@ function frame(now) {
 }
 fetch('../assets/models/web_bottom.json').then(r => r.json()).then(d => {
   DATA = d; document.getElementById('load').remove(); resize(); buildList();
+  const lb = document.getElementById('lightbox'), lbimg = document.getElementById('lbimg');
+  document.querySelectorAll('.thumbs button').forEach(b => b.onclick = () => { lbimg.src = b.dataset.src; lbimg.classList.remove('zoom'); lb.classList.add('on'); document.body.style.overflow = 'hidden'; });
+  lbimg.onclick = e => { const r = lbimg.getBoundingClientRect(), fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height, box = lbimg.parentElement;
+    lbimg.classList.toggle('zoom');
+    if (lbimg.classList.contains('zoom')) { const r2 = lbimg.getBoundingClientRect(); box.scrollLeft = fx * r2.width - innerWidth / 2; box.scrollTop = fy * r2.height - innerHeight / 2; } };
+  lb.onclick = e => { if (e.target === lbimg) return; if (e.target === lb || e.target.classList.contains('lbx') || e.target.classList.contains('lbin')) { lb.classList.remove('on'); document.body.style.overflow = ''; } };
   if (window.innerWidth > 900) document.getElementById('stepsbox').open = true;
   const m = location.hash.match(/step-(\d+)/); go(m ? +m[1] - 1 : 0); requestAnimationFrame(frame);
   if (DEBUG) { window.__go = go; window.__canvas = canvas; window.__n = STEPS.length; window.__step = () => STEP; window.__bbox = bbox; }

@@ -27,11 +27,28 @@ function heat(t) {                                   // 0..1 -> blue, light blue
   return new THREE.Color().setRGB((a[0] + (b[0] - a[0]) * f) / 255, (a[1] + (b[1] - a[1]) * f) / 255, (a[2] + (b[2] - a[2]) * f) / 255, THREE.SRGBColorSpace);
 }
 
+
+// ---- phones: the page scrolls over the 3D view until the user taps "Tap to turn"; rendering pauses off screen
+function touchLock(box, canvas, controls) {
+  const touch = matchMedia('(pointer: coarse)').matches;
+  const state = { visible: true, touch };
+  new IntersectionObserver(es => { state.visible = es[0].isIntersecting; if (!state.visible && touch) lock(); }, { threshold: 0.05 }).observe(box);
+  if (!touch) return state;
+  const btn = document.createElement('button'); btn.className = 'tapturn'; btn.type = 'button';
+  box.appendChild(btn);
+  function lock() { controls.enabled = false; canvas.style.touchAction = 'pan-y'; btn.textContent = '\u261D Tap to turn'; btn.classList.remove('on'); }
+  function unlock() { controls.enabled = true; canvas.style.touchAction = 'none'; btn.textContent = '\u2713 Done'; btn.classList.add('on'); }
+  btn.addEventListener('click', e => { e.stopPropagation(); controls.enabled ? lock() : unlock(); });
+  lock();
+  return state;
+}
+
 export async function bridgeViewer(box, opts = {}) {
   const dark = !!opts.dark;
   const canvas = box.querySelector('canvas');
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  const coarse = matchMedia('(pointer: coarse)').matches;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, coarse ? 1.5 : 2));
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = dark ? 1.05 : 1.0;
   const scene = new THREE.Scene();
@@ -43,7 +60,7 @@ export async function bridgeViewer(box, opts = {}) {
   let sway = opts.autoRotate !== false;
   controls.addEventListener('start', () => { sway = false; });
   const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(-120, 260, 160); sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -220, right: 220, top: 160, bottom: -160, near: 10, far: 700 });
+  sun.shadow.mapSize.set(coarse ? 1024 : 2048, coarse ? 1024 : 2048); Object.assign(sun.shadow.camera, { left: -220, right: 220, top: 160, bottom: -160, near: 10, far: 700 });
   sun.shadow.bias = -0.0004; scene.add(sun); scene.add(new THREE.HemisphereLight(0xdfe9ff, 0x223344, dark ? 0.5 : 0.8));
 
   const D = await (await fetch(opts.data || 'assets/models/bridge.json')).json();
@@ -192,10 +209,12 @@ export async function bridgeViewer(box, opts = {}) {
   }
   new ResizeObserver(() => { const w = box.clientWidth, h = box.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); offset(); }).observe(box);
   fit(); offset();
+  const vis = touchLock(box, canvas, controls);
   const v3 = new THREE.Vector3();
   const amp = opts.exaggerate || 40; let base = null;
   function frame(now) {
     requestAnimationFrame(frame);
+    if (!vis.visible) return;
     if (mode === 'staad') {                          // load on, load off (elastic); the slider holds any load level
       const f = !showLoad ? 0 : manual ? +opts.slider.value / 100 : 0.5 * (1 - Math.cos((now - t0) / 3600 * 2 * Math.PI));
       deform(CASES[caseKey].amp * f);
