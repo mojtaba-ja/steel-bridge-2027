@@ -8,7 +8,7 @@
 <meta name="description" content="The FAU Student Steel Bridge 2027 design in 3D: analysis, true-size joints and a step-by-step build guide.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css?v=12">
+<link rel="stylesheet" href="assets/css/site.css?v=13">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b2545'/%3E%3Cpath d='M4 22h24M7 22l5-10h8l5 10M12 12l4 10 4-10' stroke='%23f2a541' stroke-width='2.4' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E">
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
@@ -32,9 +32,9 @@
   <div class="tip" id="tip"></div>
   <div class="facts"><div class="in">
     <div class="fact"><b>22 ft 5 in</b><span>span</span></div>
-    <div class="fact"><b>236 lb</b><span>steel, from the model</span></div>
-    <div class="fact"><b>0.34 in</b><span>deflection (model)</span></div>
-    <div class="fact"><b>79</b><span>pieces</span></div>
+    <div class="fact"><b>251 lb</b><span>steel, from the model</span></div>
+    <div class="fact"><b>0.44 in</b><span>deflection (model)</span></div>
+    <div class="fact"><b>82</b><span>pieces</span></div>
   </div></div>
   <div class="hint">Tap a member to see its size</div>
 </header>
@@ -55,6 +55,31 @@
     </div>
   </section>
 
+
+  <section class="block">
+    <h2>What changed</h2>
+    <p class="sub">The posts moved to the tops of the diagonals, so an impact driver reaches every bolt.</p>
+    <div class="ba">
+      <div class="loadview">
+        <div class="viewer" id="bav">
+          <div class="bav-c off" id="bav-before"><canvas></canvas></div>
+          <div class="bav-c" id="bav-after"><canvas></canvas></div>
+          <div class="modes"><span class="seg"><button class="pill" data-ba="before">Before</button><button class="pill on" data-ba="after">After</button></span></div>
+          <div class="legend" id="balg">Posts at the tops of the diagonals</div>
+        </div>
+      </div>
+      <figure class="card baimg">
+        <img id="baimg" src="assets/img/driver-after.jpg" alt="Post bottom with the impact driver path">
+        <figcaption id="bacap" class="ok">Driver path clear</figcaption>
+      </figure>
+    </div>
+    <div class="banums">
+      <div><span>Weight</span><b>237 &rarr; 251 lb</b></div>
+      <div><span>Deflection</span><b>0.44 &rarr; 0.44 in</b></div>
+      <div><span>Sway</span><b>0.10 &rarr; 0.07 in</b></div>
+    </div>
+  </section>
+
   <section class="block">
     <h2>Why the trusses are above the deck</h2>
     <div class="grid2">
@@ -64,11 +89,11 @@
       <div class="card"><div class="pad">
         <table class="t">
           <tr><th>Rule (2027)</th><th>Limit</th><th>This bridge</th></tr>
-          <tr><td>Deck height<small class="lim">limit 19 to 22 in</small></td><td>19 to 22 in</td><td>21 3/8 in</td></tr>
-          <tr><td>Clearance over the river<small class="lim">limit 12 in or more</small></td><td>12 in or more</td><td>18 7/8 in</td></tr>
-          <tr><td>Envelope<small class="lim">limit 5 ft x 5 ft</small></td><td>5 ft x 5 ft</td><td>4 ft 6 in tall</td></tr>
+          <tr><td>Deck height<small class="lim">limit 19 to 22 in</small></td><td>19 to 22 in</td><td>21 3/4 in</td></tr>
+          <tr><td>Clearance over the river<small class="lim">limit 12 in or more</small></td><td>12 in or more</td><td>18 3/4 in</td></tr>
+          <tr><td>Envelope<small class="lim">limit 5 ft x 5 ft</small></td><td>5 ft x 5 ft</td><td>4 ft 6 1/8 in tall</td></tr>
           <tr><td>Longest piece, with its plates<small class="lim">limit 42 in box</small></td><td>42 in box</td><td>41 5/8 in</td></tr>
-          <tr><td>Sway under 50 lb<small class="lim">limit 3/4 in (3/8 in bonus)</small></td><td>3/4 in (3/8 in bonus)</td><td>0.11 in</td></tr>
+          <tr><td>Sway under 50 lb<small class="lim">limit 3/4 in (3/8 in bonus)</small></td><td>3/4 in (3/8 in bonus)</td><td>0.07 in</td></tr>
         </table>
       </div></div>
     </div>
@@ -101,12 +126,27 @@
 </div></footer>
 
 <script type="module">
-import { bridgeViewer } from './assets/js/bridge3d.js?v=12';
+import { bridgeViewer } from './assets/js/bridge3d.js?v=15';
 const hero = document.getElementById('hero');
 const lv = document.getElementById('lv');
 bridgeViewer(lv, { dark: true, mode: 'staad', autoRotate: false, view: [0.22, 0.3, -1.0], zoom: 0.56, zoomMobile: 0.9, targetY: -2,
   caseButtons: [...lv.querySelectorAll('.pill[data-case]')], stateButtons: [...lv.querySelectorAll('.pill[data-state]')],
   legend: document.getElementById('lvlg'), slider: document.getElementById('lvs'), readout: document.getElementById('lvr') });
+// before / after: two steel views in one box, one shown at a time
+const BA = { before: { img: 'assets/img/driver-before.jpg', cap: 'Driver path blocked by the diagonal plates', cls: 'bad', lg: 'Diagonals land beside the posts' },
+             after: { img: 'assets/img/driver-after.jpg', cap: 'Driver path clear', cls: 'ok', lg: 'Posts at the tops of the diagonals' } };
+const baView = { dark: true, autoRotate: false, view: [0.16, 0.3, -1.0], zoom: 0.66, zoomMobile: innerWidth < 760 ? 0.98 : 0.66, targetY: 1 };
+bridgeViewer(document.getElementById('bav-after'), baView);
+let baBefore = null;
+document.querySelectorAll('.pill[data-ba]').forEach(b => b.onclick = () => {
+  const k = b.dataset.ba;
+  document.querySelectorAll('.pill[data-ba]').forEach(x => x.classList.toggle('on', x === b));
+  document.getElementById('bav-before').classList.toggle('off', k !== 'before');
+  document.getElementById('bav-after').classList.toggle('off', k !== 'after');
+  if (k === 'before' && !baBefore) baBefore = bridgeViewer(document.getElementById('bav-before'), { ...baView, data: 'assets/models/bridge_before.json' });
+  const im = document.getElementById('baimg'), cap = document.getElementById('bacap');
+  im.src = BA[k].img; cap.textContent = BA[k].cap; cap.className = BA[k].cls; document.getElementById('balg').textContent = BA[k].lg;
+});
 bridgeViewer(hero, { dark: true, tip: document.getElementById('tip'),
   view: [0.66, 0.36, -0.72], zoom: 0.8, zoomMobile: 1.05, targetY: 2, shiftX: 0.2, shiftY: -0.08, shiftYMobile: 0.02 });
 </script>

@@ -85,14 +85,16 @@ export async function bridgeViewer(box, opts = {}) {
   // STAAD view: deformed line model colored by displacement, nodes, supports, deck loads
   const CASES = { v: { id: String(D.worst_case), amp: opts.exaggerate || 40 }, h: { id: '2', amp: 150 } };
   let caseKey = 'v', dsp = D.cases[CASES.v.id].d, dmax = 0, showLoad = true;
-  const dmaxOf = d => { let m = 0; for (const v of Object.values(d)) m = Math.max(m, Math.hypot(...v)); return m; };
+  // deflection = vertical movement (2,600 lb case), sway = movement across the bridge (50 lb case), as the rules measure them
+  let comp = 1; const dv = v => Math.abs((v || [0, 0, 0])[comp]);
+  const dmaxOf = d => { let m = 0; for (const v of Object.values(d)) m = Math.max(m, dv(v)); return m; };
   dmax = dmaxOf(dsp);
   const linePos = [], lineCol = [], lineIdx = [];
-  for (const m of D.members) for (const j of [m.a, m.b]) { linePos.push(0, 0, 0); const c = heat(Math.hypot(...(dsp[j] || [0, 0, 0])) / dmax); lineCol.push(c.r, c.g, c.b); lineIdx.push(String(j)); }
+  for (const m of D.members) for (const j of [m.a, m.b]) { linePos.push(0, 0, 0); const c = heat(dv(dsp[j]) / dmax); lineCol.push(c.r, c.g, c.b); lineIdx.push(String(j)); }
   const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(linePos, 3)); lg.setAttribute('color', new THREE.Float32BufferAttribute(lineCol, 3));
   const defo = D.members.map(m => {
     const da = dsp[m.a] || [0, 0, 0], db = dsp[m.b] || [0, 0, 0];
-    const c = heat(0.5 * (Math.hypot(...da) + Math.hypot(...db)) / dmax);
+    const c = heat(0.5 * (dv(da) + dv(db)) / dmax);
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1.25, 1.25), new THREE.MeshBasicMaterial({ color: c, toneMapped: false }));
     staad.add(mesh); return { mesh, a: String(m.a), b: String(m.b) };
   });
@@ -112,17 +114,17 @@ export async function bridgeViewer(box, opts = {}) {
     const deck = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, 1.2, 42), new THREE.MeshStandardMaterial({ color: 0x9aa7b8, transparent: true, opacity: 0.55 }));
     deck.position.set((x0 + x1) / 2 - 134.4, 22.4 - 26.75, 0); vLoad.add(deck);
     for (const z of [-12, 12]) vLoad.add(new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3((x0 + x1) / 2 - 134.4, 22.4 - 26.75 + 22, z), 20, 0xd7191c, 5, 3));
-    labels.push({ p: new THREE.Vector3((x0 + x1) / 2 - 134.4, 22.4 - 26.75 + 25 + 9 * k, 0), text: txt, mode: 'staad', cs: 'v' });
+    labels.push({ p: new THREE.Vector3((x0 + x1) / 2 - 134.4, 22.4 - 26.75 + 25 + 26 * k, 0), text: txt, mode: 'staad', cs: 'v' });
   }
   // sideways pull: 50 lb at 11 ft 6 in from the west end, on the south stringer (rule 11.4)
   hLoad.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(138 - 134.4, 21 - 26.75, 19.5), 24, 0xd7191c, 6, 3.5));
   labels.push({ p: new THREE.Vector3(138 - 134.4, 21 - 26.75 + 5, 46), text: '50 lb sideways', mode: 'staad', cs: 'h' });
   function recolor() {
     defo.forEach((t, i) => { const m = D.members[i], da = dsp[m.a] || [0, 0, 0], db = dsp[m.b] || [0, 0, 0];
-      const c = heat(0.5 * (Math.hypot(...da) + Math.hypot(...db)) / dmax); t.mesh.material.color.copy(c); });
+      const c = heat(0.5 * (dv(da) + dv(db)) / dmax); t.mesh.material.color.copy(c); });
   }
   function setCase(k) {
-    caseKey = k; dsp = D.cases[CASES[k].id].d; dmax = dmaxOf(dsp); recolor();
+    caseKey = k; comp = k === 'v' ? 1 : 2; dsp = D.cases[CASES[k].id].d; dmax = dmaxOf(dsp); recolor();
     vLoad.visible = k === 'v'; hLoad.visible = k === 'h'; t0 = performance.now();
     (opts.caseButtons || []).forEach(b => b.classList.toggle('on', b.dataset.case === k));
     if (opts.legend) opts.legend.innerHTML = (k === 'v' ? 'Shape x40' : 'Shape x150') +
