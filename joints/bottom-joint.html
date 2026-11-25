@@ -7,7 +7,7 @@
 <title>Build guide: bottom joint at each post | FAU Steel Bridge 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/site.css?v=4">
+<link rel="stylesheet" href="../assets/css/site.css?v=5">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b2545'/%3E%3Cpath d='M4 22h24M7 22l5-10h8l5 10M12 12l4 10 4-10' stroke='%23f2a541' stroke-width='2.4' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
   .head { background: linear-gradient(180deg, #0b2545, #13315c); color: #fff; padding: 22px 18px 20px; }
@@ -71,7 +71,7 @@
 <body>
 <nav class="nav"><div class="in">
   <a class="brand" href="../"><svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#13315c"/><path d="M4 22h24M7 22l5-10h8l5 10M12 12l4 10 4-10" stroke="#f2a541" stroke-width="2.4" fill="none" stroke-linejoin="round"/></svg><span>FAU Steel Bridge 2027</span></a>
-  <div class="links"><a href="../">Bridge</a><a href="../design.html">Design</a><a href="bottom-joint.html" class="on">Build guide</a></div>
+  <div class="links"><a href="../">Bridge</a><a href="bottom-joint.html" class="on">Build guide</a></div>
 </div></nav>
 <header class="head"><div class="in">
   <div class="eyebrow">Build guide</div>
@@ -103,28 +103,11 @@
       <div class="list" id="list"></div>
     </div>
   </div>
-
-  <section class="block">
-    <h2>Printable sheets</h2>
-    <div class="sheets">
-      <a href="sheets/A-shop-drawing.png"><img src="sheets/A-shop-drawing.png" alt="Shop drawing" loading="lazy"><span>A. Shop drawing with sizes</span></a>
-      <a href="sheets/B-parts-to-cut-and-drill.png"><img src="sheets/B-parts-to-cut-and-drill.png" alt="Parts" loading="lazy"><span>B. Parts to cut and drill</span></a>
-      <a href="sheets/C-shop-steps.png"><img src="sheets/C-shop-steps.png" alt="Shop steps" loading="lazy"><span>C. Making it in the shop</span></a>
-      <a href="sheets/D-competition-day-steps.png"><img src="sheets/D-competition-day-steps.png" alt="Competition day" loading="lazy"><span>D. Competition day: bolting</span></a>
-    </div>
-  </section>
-  <section class="block files" id="files">
-    <h2>Files</h2>
-    <p class="sub">STEP opens in any CAD program. DXF is true size for AutoCAD.</p>
-    <a class="btn" href="files/Bottom-joint-sheets.pdf">Sheets (PDF)</a>
-    <a class="btn" href="files/Bottom-joint.step">3D model (STEP)</a>
-    <a class="btn" href="files/Bottom-joint-flat-parts.dxf">Flat parts, true size (DXF)</a>
-    <a class="btn" href="files/Bottom-joint-SolidWorks-2026.zip">SolidWorks 2026 files (zip)</a>
-  </section>
+  <p style="margin:18px 2px 0"><a href="files/Bottom-joint-sheets.pdf"><b>Print the sheets (PDF) &rarr;</b></a></p>
 </main>
 <footer><div class="in">
   <div>FAU ASCE Student Steel Bridge Team, Florida Atlantic University</div>
-  <div><a href="../">Bridge</a> &middot; <a href="../design.html">Design</a></div>
+  <div><a href="../">Bridge</a></div>
 </div></footer>
 
 <script type="module">
@@ -322,6 +305,19 @@ function drillAnim(ctx, raws, dones, holesWorld, t0 = 0.05, t1 = 0.92) {
     const span = top + 1.0 - (bot - 0.15); bit.position.set(h.x, top + 1.0 - span * u + span * v, h.z); bit.rotation.y = t * 60;
     const done = t >= t0 + (n - 1) * w + 0.5 * w; raws.forEach(o => o.visible = !done); dones.forEach(o => o.visible = done); bit.visible = t < t1 + 0.02; });
 }
+
+function holeDims(ctx, o, first = 0) {
+  // first hole from the nearer end and the nearer side, then the spacing to the next hole; drawn flat, just outside the part
+  const b = bbox(o), H = holesOf(o); if (!H.length) return;   // reference hole = the first in the CAD list (same edge as the sheets)
+  const cx = (b.min.x + b.max.x) / 2, cz = (b.min.z + b.max.z) / 2, y = b.max.y + 0.01, off = 0.5;
+  const h0 = H[first];
+  const ex = Math.abs(h0.x - b.min.x) <= Math.abs(b.max.x - h0.x) ? b.min.x : b.max.x;
+  const ez = Math.abs(h0.z - b.min.z) <= Math.abs(b.max.z - h0.z) ? b.min.z : b.max.z;
+  const sx = Math.sign(ex - cx) || 1, sz = Math.sign(ez - cz) || 1, V = (x, z) => new THREE.Vector3(x, y, z);
+  ctx.dim(V(ex, ez), V(h0.x, ez), F(Math.abs(h0.x - ex)), new THREE.Vector3(0, 0, sz * off));
+  ctx.dim(V(ex, ez), V(ex, h0.z), F(Math.abs(h0.z - ez)), new THREE.Vector3(sx * off, 0, 0));
+  if (H.length > 1) { const h1 = H[1 - first]; ctx.dim(V(h0.x, ez), V(h1.x, ez), F(Math.abs(h1.x - h0.x)), new THREE.Vector3(0, 0, sz * off)); }
+}
 function holesOf(o) { const name = o.userData.name.replace(' raw', ''); return DATA.parts[name].holes.map(h => new THREE.Vector3(...h.c).applyMatrix4(o.matrixWorld)); }
 
 // ------------------------------------------------------------------ the steps
@@ -358,22 +354,20 @@ S('Cut', 'saw', 'Cut off two corners of each tab: 1/4 in at 45 degrees.', 'Two s
 function pairDrill(ctx, n1, n2) {
   const r1 = ctx.add(layFlat(part(n1 + ' raw'), n1 + ' raw', 0, 0, 0)), r2 = n2 ? ctx.add(layFlat(part(n2 + ' raw'), n2 + ' raw', 0, 0, 0.125)) : null;
   const d1 = ctx.add(layFlat(part(n1), n1, 0, 0, 0)), d2 = n2 ? ctx.add(layFlat(part(n2), n2, 0, 0, 0.125)) : null;
-  drillAnim(ctx, [r1, r2].filter(Boolean), [d1, d2].filter(Boolean), holesOf(d1)); ctx.bench(bbox(ctx.group)); return { d1 };
+  drillAnim(ctx, [r1, r2].filter(Boolean), [d1, d2].filter(Boolean), holesOf(d1)); ctx.bench(bbox(ctx.group)); holeDims(ctx, d2 || d1); return { d1 };
 }
 S('Drill', 'drill', 'Drill the 2 post plates together: 2 holes.', 'Clamp the pair so the holes match. Holes 1/2 in from the outside edge.', 'bench', ctx => {
-  const { d1 } = pairDrill(ctx, 'post plate 1', 'post plate 2'), b = bbox(d1), h = holesOf(d1);
-  ctx.dim(new THREE.Vector3(h[0].x, b.max.y + 0.13, h[0].z), new THREE.Vector3(h[1].x, b.max.y + 0.13, h[1].z), '1 1/4 in'); });
+  pairDrill(ctx, 'post plate 1', 'post plate 2'); });
 S('Drill', 'drill', 'Drill each pair of diagonal plates together: 1 hole.', 'The hole is 5/8 in from one end. That end goes toward the post.', 'bench', ctx => { pairDrill(ctx, 'diag plate R1', 'diag plate R2'); });
 S('Drill', 'drill', 'Drill the 2 floor beam plates together: 2 holes.', 'Holes 1/2 in and 2 in from the end that laps onto the stub.', 'bench', ctx => {
-  const { d1 } = pairDrill(ctx, 'floor beam plate 1', 'floor beam plate 2'), b = bbox(d1), h = holesOf(d1);
-  ctx.dim(new THREE.Vector3(h[0].x, b.max.y + 0.13, h[0].z), new THREE.Vector3(h[1].x, b.max.y + 0.13, h[1].z), '1 1/2 in'); });
+  pairDrill(ctx, 'floor beam plate 1', 'floor beam plate 2'); });
 S('Drill', 'drill', 'Drill each tab: 1 hole, 3/4 in from the cut corners.', '', 'bench', ctx => {
   const r = ctx.add(layFlat(part('tab R clipped'), 'tab R clipped')), d = ctx.add(layFlat(part('tab R'), 'tab R'));
-  r.userData.name = 'tab R'; drillAnim(ctx, [r], [d], holesOf(d)); ctx.bench(bbox(ctx.group)); });
+  r.userData.name = 'tab R'; drillAnim(ctx, [r], [d], holesOf(d)); ctx.bench(bbox(ctx.group)); holeDims(ctx, d); });
 S('Drill', 'drill', 'Drill the stub through both walls: 2 holes, before welding.', 'Holes 1/2 in and 2 in from the stringer end.', 'bench', ctx => {
-  const r = ctx.add(layFlat(part('stub raw'), 'stub raw')), d = ctx.add(layFlat(part('stub'), 'stub')); drillAnim(ctx, [r], [d], holesOf(d)); ctx.bench(bbox(ctx.group)); });
+  const r = ctx.add(layFlat(part('stub raw'), 'stub raw')), d = ctx.add(layFlat(part('stub'), 'stub')); drillAnim(ctx, [r], [d], holesOf(d)); ctx.bench(bbox(ctx.group)); holeDims(ctx, d, 1); });
 S('Drill', 'drill', 'Drill the post through both walls: 2 holes at each end.', 'Bottom end shown: 9/16 in and 1 13/16 in from the end. Top end: 9/16 in and 1 9/16 in.', 'bench', ctx => {
-  const r = ctx.add(layFlat(part('post raw'), 'post raw')), d = ctx.add(layFlat(part('post'), 'post')); drillAnim(ctx, [r], [d], holesOf(d)); ctx.bench(bbox(ctx.group)); });
+  const r = ctx.add(layFlat(part('post raw'), 'post raw')), d = ctx.add(layFlat(part('post'), 'post')); drillAnim(ctx, [r], [d], holesOf(d)); ctx.bench(bbox(ctx.group)); holeDims(ctx, d); });
 S('Slot', 'grinder', 'Cut a slot in the diagonal end: 1/8 in wide, 3/4 in deep.', 'Straight in along the tube, through both walls.', 'bench', ctx => {
   const raw = ctx.add(layFlat(part('diagonal R raw'), 'diagonal R raw')), fin = ctx.add(layFlat(part('diagonal R'), 'diagonal R'));
   const b = bbox(raw), yc = (b.min.y + b.max.y) / 2, zc = (b.min.z + b.max.z) / 2, r = 2.0, disc = ctx.tool(new THREE.Group());
@@ -387,7 +381,8 @@ S('Slot', 'grinder', 'Cut a slot in the diagonal end: 1/8 in wide, 3/4 in deep.'
 S('Weld', 'weld', 'Weld the stub to the bottom chord, all round.', 'This starts the edge piece. The holes in the stub run along the bridge.', 'joint', ctx => {
   ctx.add(part('chord')); const st = ctx.add(part('stub')); slide(ctx, st, [0, 0, -2.5], 0.0, 0.3); weldAnim(ctx, ['stub'], 0.35, 0.95); });
 S('Weld', 'weld', 'Set the stringer on the stub and weld 3 sides.', 'Both sides of the stub, and the stringer side facing the chord.', 'joint', ctx => {
-  add(ctx, ['chord', 'stub']); const s = ctx.add(part('stringer')); slide(ctx, s, [0, 2.5, 0], 0.0, 0.3); weldAnim(ctx, ['stringer'], 0.35, 0.95); });
+  add(ctx, ['chord', 'stub']); const s = ctx.add(part('stringer')); slide(ctx, s, [0, 2.5, 0], 0.0, 0.3); weldAnim(ctx, ['stringer'], 0.35, 0.95);
+  ctx.dim(new THREE.Vector3(-6.5, 0.5, 0), new THREE.Vector3(-6.5, 0.5, -4.25), '4 1/4 in, center to center', new THREE.Vector3(-0.7, 0, 0)); });
 S('Weld', 'weld', 'Bolt the 2 post plates to a short piece of post tube, then set them on the chord.', 'The short piece holds the holes in line while you weld. It comes off after.', 'joint', ctx => {
   add(ctx, ['chord', 'stub', 'stringer']); const asm = ctx.add(new THREE.Group()), p1 = part('post plate 1'), p2 = part('post plate 2'); asm.add(part('jig post'), p1, p2);
   slide(ctx, p1, [1.5, 0, 0], 0.0, 0.25); slide(ctx, p2, [-1.5, 0, 0], 0.0, 0.25);
@@ -399,7 +394,7 @@ S('Weld', 'weld', 'Bolt each pair of diagonal plates on a 5/32 in spacer. Set th
   add(ctx, EDGE_FIN.slice(0, 5));
   for (const s of ['R', 'L']) { const asm = ctx.add(new THREE.Group()), a = part('diag plate ' + s + '1'), b = part('diag plate ' + s + '2'); asm.add(part('spacer ' + s), a, b);
     slide(ctx, a, [0, 0, 1.2], 0.0, 0.25); slide(ctx, b, [0, 0, -1.2], 0.0, 0.25); boltIn(newSubCtx(ctx, asm), 'spacer bolt ' + s, 0.28, 0.58); slide(ctx, asm, [0, 3.0, 0], 0.62, 0.95); }
-  ctx.label('2 in', new THREE.Vector3(1.0, 3.2, 0.3)); ctx.label('2 in', new THREE.Vector3(-1.0, 3.2, 0.3)); });
+  for (const sgn of [1, -1]) ctx.dim(new THREE.Vector3(0, 2.6, 0.25), new THREE.Vector3(2 * sgn, 2.6, 0.25), '2 in', new THREE.Vector3(0, 0.7, 0)); });
 S('Weld', 'weld', 'Weld the outer face of each diagonal plate to the chord. Then remove the spacers.', '', 'joint', ctx => {
   add(ctx, EDGE_FIN); const sps = ['R', 'L'].map(s => ctx.add(part('spacer ' + s))); weldAnim(ctx, ['diag plates R', 'diag plates L'], 0.03, 0.5);
   ['R', 'L'].forEach(s => boltOut(ctx, 'spacer bolt ' + s, 0.55, 0.78)); sps.forEach(o => { slide(ctx, o, [0, 4, 0], 0.8, 0.97, true); hideAfter(ctx, o, 0.97); }); });
@@ -407,7 +402,7 @@ S('Weld', 'weld', 'Floor beam: bolt its plates to a short piece of stub tube, on
   const fb = ctx.add(part('floor beam')); ctx.add(part('jig stub')); const p1 = ctx.add(part('floor beam plate 1')), p2 = ctx.add(part('floor beam plate 2'));
   slide(ctx, p1, [1.5, 0, 0], 0.0, 0.25); slide(ctx, p2, [-1.5, 0, 0], 0.0, 0.25);
   boltIn(ctx, 'jig floor beam bolt outer', 0.28, 0.5); boltIn(ctx, 'jig floor beam bolt inner', 0.36, 0.58); slide(ctx, fb, [0, 0, -4], 0.62, 0.95);
-  ctx.label('floor beam', new THREE.Vector3(0, 1.1, -10), true); ctx.label('short piece (comes off)', new THREE.Vector3(0, 1.1, -2.6), true); });
+  ctx.dim(new THREE.Vector3(0.75, 0.5, -4.9375), new THREE.Vector3(0.75, 0.5, -7.5), '2 9/16 in on the beam', new THREE.Vector3(0, 0.6, 0)); });
 S('Weld', 'weld', 'Weld each plate to the floor beam on 3 edges. Then unbolt the short piece.', 'Top edge, bottom edge and the end. Same at the other end of the floor beam.', 'joint', ctx => {
   add(ctx, ['floor beam', 'floor beam plate 1', 'floor beam plate 2']); const jig = ctx.add(part('jig stub')); weldAnim(ctx, ['floor beam'], 0.03, 0.5);
   boltOut(ctx, 'jig floor beam bolt outer', 0.55, 0.78); boltOut(ctx, 'jig floor beam bolt inner', 0.55, 0.78); slide(ctx, jig, [0, 0, 4], 0.8, 0.97, true); hideAfter(ctx, jig, 0.97); });

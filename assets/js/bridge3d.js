@@ -65,7 +65,7 @@ export async function bridgeViewer(box, opts = {}) {
   const grid = new THREE.GridHelper(720, 60, dark ? 0x3d5f8c : 0xc7ced8, dark ? 0x23436c : 0xe3e7ec);
   grid.position.y = groundY + 0.02; grid.material.transparent = true; grid.material.opacity = dark ? 0.55 : 0.7; scene.add(grid);
 
-  // STAAD view: deformed line model coloured by displacement, nodes, supports, deck loads
+  // STAAD view: deformed line model colored by displacement, nodes, supports, deck loads
   const CASES = { v: { id: String(D.worst_case), amp: opts.exaggerate || 40 }, h: { id: '2', amp: 150 } };
   let caseKey = 'v', dsp = D.cases[CASES.v.id].d, dmax = 0, showLoad = true;
   const dmaxOf = d => { let m = 0; for (const v of Object.values(d)) m = Math.max(m, Math.hypot(...v)); return m; };

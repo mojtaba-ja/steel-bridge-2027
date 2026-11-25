@@ -8,7 +8,7 @@
 <meta name="description" content="The FAU Student Steel Bridge 2027 design in 3D: analysis, true-size joints and a step-by-step build guide.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css?v=4">
+<link rel="stylesheet" href="assets/css/site.css?v=5">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b2545'/%3E%3Cpath d='M4 22h24M7 22l5-10h8l5 10M12 12l4 10 4-10' stroke='%23f2a541' stroke-width='2.4' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E">
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
@@ -18,7 +18,7 @@
 <body>
 <nav class="nav"><div class="in">
   <a class="brand" href="./"><svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#13315c"/><path d="M4 22h24M7 22l5-10h8l5 10M12 12l4 10 4-10" stroke="#f2a541" stroke-width="2.4" fill="none" stroke-linejoin="round"/></svg><span>FAU Steel Bridge 2027</span></a>
-  <div class="links"><a href="./" class="on">Bridge</a><a href="design.html">Design</a><a href="joints/bottom-joint.html">Build guide</a></div>
+  <div class="links"><a href="./" class="on">Bridge</a><a href="joints/bottom-joint.html">Build guide</a></div>
 </div></nav>
 
 <header class="hero" id="hero">
@@ -69,7 +69,6 @@
       <div class="st"><div class="n">3. Drawings</div><h3>SolidWorks 2026</h3><p>Assemblies and shop sheets.</p></div>
       <div class="st"><div class="n">4. Joint checks</div><h3>AISC 360-22</h3><p>Bolts, plates and welds by hand.</p></div>
     </div>
-    <p style="margin-top:14px"><a href="design.html"><b>See each step &rarr;</b></a></p>
   </section>
 
   <section class="block">
@@ -95,7 +94,6 @@ heroEl.querySelectorAll('.pill[data-mode]').forEach(b => b.addEventListener('cli
 const hero = document.getElementById('hero');
 bridgeViewer(hero, { dark: true, tip: document.getElementById('tip'), modeButtons: [...hero.querySelectorAll('.pill[data-mode]')],
   caseButtons: [...hero.querySelectorAll('.pill[data-case]')], stateButtons: [...hero.querySelectorAll('.pill[data-state]')],
-  joints: [{ x: 44.8, y: 19.5, z: -22.75, label: 'Bottom joint: build guide', href: 'joints/bottom-joint.html' }],
   view: [0.66, 0.36, -0.72], zoom: 0.8, zoomMobile: 1.1, targetY: 2, shiftX: 0.2, shiftY: -0.08, shiftYMobile: 0.1 });
 </script>
 </body>
