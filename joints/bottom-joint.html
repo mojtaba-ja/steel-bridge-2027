@@ -7,7 +7,7 @@
 <title>Build guide: bottom joint at each post | FAU Steel Bridge 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/site.css?v=3">
+<link rel="stylesheet" href="../assets/css/site.css?v=4">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b2545'/%3E%3Cpath d='M4 22h24M7 22l5-10h8l5 10M12 12l4 10 4-10' stroke='%23f2a541' stroke-width='2.4' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
   .head { background: linear-gradient(180deg, #0b2545, #13315c); color: #fff; padding: 22px 18px 20px; }
@@ -92,7 +92,7 @@
       <div class="legend2">
         <span><i style="background:#e0781c"></i>edge piece</span><span><i style="background:#3a8cd8"></i>post, floor beam</span>
         <span><i style="background:#2e9e5c"></i>diagonal</span><span><i style="background:#9aa0a8"></i>plates and tabs</span>
-        <span><i style="background:#2b2b2b"></i>bolts</span><span><i style="background:#f2c94c"></i>jig (not welded)</span><span><i style="background:#e01e1e"></i>weld</span>
+        <span><i style="background:#2b2b2b"></i>bolts</span><span><i style="background:#f2c94c"></i>temporary piece</span><span><i style="background:#e01e1e"></i>weld</span>
       </div>
     </div>
     <div class="panel">
@@ -388,11 +388,11 @@ S('Weld', 'weld', 'Weld the stub to the bottom chord, all round.', 'This starts 
   ctx.add(part('chord')); const st = ctx.add(part('stub')); slide(ctx, st, [0, 0, -2.5], 0.0, 0.3); weldAnim(ctx, ['stub'], 0.35, 0.95); });
 S('Weld', 'weld', 'Set the stringer on the stub and weld 3 sides.', 'Both sides of the stub, and the stringer side facing the chord.', 'joint', ctx => {
   add(ctx, ['chord', 'stub']); const s = ctx.add(part('stringer')); slide(ctx, s, [0, 2.5, 0], 0.0, 0.3); weldAnim(ctx, ['stringer'], 0.35, 0.95); });
-S('Weld', 'weld', 'Bolt the 2 post plates to a jig post, then set them on the chord.', 'Jig: a 4 in piece of post tube, drilled like a post. It keeps the holes in line.', 'joint', ctx => {
+S('Weld', 'weld', 'Bolt the 2 post plates to a short piece of post tube, then set them on the chord.', 'The short piece holds the holes in line while you weld. It comes off after.', 'joint', ctx => {
   add(ctx, ['chord', 'stub', 'stringer']); const asm = ctx.add(new THREE.Group()), p1 = part('post plate 1'), p2 = part('post plate 2'); asm.add(part('jig post'), p1, p2);
   slide(ctx, p1, [1.5, 0, 0], 0.0, 0.25); slide(ctx, p2, [-1.5, 0, 0], 0.0, 0.25);
   const sub = newSubCtx(ctx, asm); boltIn(sub, 'jig post bolt lower', 0.28, 0.5); boltIn(sub, 'jig post bolt upper', 0.38, 0.6); slide(ctx, asm, [0, 3.5, 0], 0.62, 0.95); });
-S('Weld', 'weld', 'Weld the bottom edges of both post plates to the chord. Then remove the jig.', 'Weld both faces of each plate. Unbolt the jig and use it again on the next joint.', 'joint', ctx => {
+S('Weld', 'weld', 'Weld the bottom edges of both post plates to the chord. Then unbolt the short piece.', 'Weld both faces. Use the same short piece on the next joint.', 'joint', ctx => {
   add(ctx, ['chord', 'stub', 'stringer', 'post plate 1', 'post plate 2']); const jig = ctx.add(part('jig post')); weldAnim(ctx, ['post plates'], 0.03, 0.5);
   boltOut(ctx, 'jig post bolt lower', 0.55, 0.78); boltOut(ctx, 'jig post bolt upper', 0.55, 0.78); slide(ctx, jig, [0, 4.5, 0], 0.8, 0.97, true); hideAfter(ctx, jig, 0.97); });
 S('Weld', 'weld', 'Bolt each pair of diagonal plates on a 5/32 in spacer. Set them 2 in from the post.', 'The spacer keeps the gap the tab needs. Hole end toward the post.', 'joint', ctx => {
@@ -403,12 +403,12 @@ S('Weld', 'weld', 'Bolt each pair of diagonal plates on a 5/32 in spacer. Set th
 S('Weld', 'weld', 'Weld the outer face of each diagonal plate to the chord. Then remove the spacers.', '', 'joint', ctx => {
   add(ctx, EDGE_FIN); const sps = ['R', 'L'].map(s => ctx.add(part('spacer ' + s))); weldAnim(ctx, ['diag plates R', 'diag plates L'], 0.03, 0.5);
   ['R', 'L'].forEach(s => boltOut(ctx, 'spacer bolt ' + s, 0.55, 0.78)); sps.forEach(o => { slide(ctx, o, [0, 4, 0], 0.8, 0.97, true); hideAfter(ctx, o, 0.97); }); });
-S('Weld', 'weld', 'Floor beam: bolt its plates to a jig stub, one plate on each side.', 'Jig: a short piece of stub tube, drilled like the stub.', 'joint', ctx => {
+S('Weld', 'weld', 'Floor beam: bolt its plates to a short piece of stub tube, one plate on each side.', 'It holds the holes in line while you weld.', 'joint', ctx => {
   const fb = ctx.add(part('floor beam')); ctx.add(part('jig stub')); const p1 = ctx.add(part('floor beam plate 1')), p2 = ctx.add(part('floor beam plate 2'));
   slide(ctx, p1, [1.5, 0, 0], 0.0, 0.25); slide(ctx, p2, [-1.5, 0, 0], 0.0, 0.25);
   boltIn(ctx, 'jig floor beam bolt outer', 0.28, 0.5); boltIn(ctx, 'jig floor beam bolt inner', 0.36, 0.58); slide(ctx, fb, [0, 0, -4], 0.62, 0.95);
-  ctx.label('floor beam', new THREE.Vector3(0, 1.1, -10), true); ctx.label('jig stub', new THREE.Vector3(0, 1.1, -2.6), true); });
-S('Weld', 'weld', 'Weld each plate to the floor beam on 3 edges. Then remove the jig.', 'Top edge, bottom edge and the end. Same at the other end of the floor beam.', 'joint', ctx => {
+  ctx.label('floor beam', new THREE.Vector3(0, 1.1, -10), true); ctx.label('short piece (comes off)', new THREE.Vector3(0, 1.1, -2.6), true); });
+S('Weld', 'weld', 'Weld each plate to the floor beam on 3 edges. Then unbolt the short piece.', 'Top edge, bottom edge and the end. Same at the other end of the floor beam.', 'joint', ctx => {
   add(ctx, ['floor beam', 'floor beam plate 1', 'floor beam plate 2']); const jig = ctx.add(part('jig stub')); weldAnim(ctx, ['floor beam'], 0.03, 0.5);
   boltOut(ctx, 'jig floor beam bolt outer', 0.55, 0.78); boltOut(ctx, 'jig floor beam bolt inner', 0.55, 0.78); slide(ctx, jig, [0, 0, 4], 0.8, 0.97, true); hideAfter(ctx, jig, 0.97); });
 S('Weld', 'weld', 'Diagonal: slide the tab 3/4 in into the slot.', 'Cut corners and hole end out. Same at the other end of the diagonal.', 'joint', ctx => {

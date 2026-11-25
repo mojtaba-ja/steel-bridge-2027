@@ -7,7 +7,7 @@
 <title>Design: from analysis to the shop floor | FAU Steel Bridge 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css?v=3">
+<link rel="stylesheet" href="assets/css/site.css?v=4">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b2545'/%3E%3Cpath d='M4 22h24M7 22l5-10h8l5 10M12 12l4 10 4-10' stroke='%23f2a541' stroke-width='2.4' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E">
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
@@ -63,27 +63,15 @@
   </section>
 
   <section class="block">
-    <h2><span class="step-no">2</span>True-size joints in FreeCAD</h2>
+    <h2><span class="step-no">2</span>Joints: FreeCAD and SolidWorks</h2>
     <div class="grid2">
-      <div class="shot"><img src="assets/img/bottom-joint.png" alt="Bottom joint at a post, true size"></div>
-      <div>
-        <p class="sub">Every plate, bolt and weld at real size, checked for clashes, the 42 in box and the deck template.</p>
-      </div>
+      <div class="shot"><img src="assets/img/bottom-joint.png" alt="Bottom joint at a post"></div>
+      <div><p class="sub">Every plate, bolt and weld at true size.</p><p><a href="joints/bottom-joint.html"><b>Open the build guide &rarr;</b></a></p></div>
     </div>
   </section>
 
   <section class="block">
-    <h2><span class="step-no">3</span>Drawings in SolidWorks 2026</h2>
-    <p class="sub">Printable sheets for the shop and for competition day.</p>
-    <div class="grid3">
-      <a class="card" href="joints/sheets/A-shop-drawing.png"><img src="joints/sheets/A-shop-drawing.png" alt="Shop drawing"><div class="pad"><h3>Shop drawing</h3><p>3D, side and end views with sizes.</p></div></a>
-      <a class="card" href="joints/sheets/C-shop-steps.png"><img src="joints/sheets/C-shop-steps.png" alt="Shop steps"><div class="pad"><h3>Shop steps</h3><p>Weld with a jig bolted in, so holes line up.</p></div></a>
-      <a class="card" href="joints/sheets/D-competition-day-steps.png"><img src="joints/sheets/D-competition-day-steps.png" alt="Competition day"><div class="pad"><h3>Competition day</h3><p>Bolting only, piece by piece.</p></div></a>
-    </div>
-  </section>
-
-  <section class="block">
-    <h2><span class="step-no">4</span>Joint checks to AISC 360-22</h2>
+    <h2><span class="step-no">3</span>Joint checks to AISC 360-22</h2>
     <p class="sub">Bottom joint. Under 1.0 passes.</p>
     <table class="t" id="checks">
       <tr><th>Part of the joint</th><th>Check</th><th style="width:30%">Demand / capacity</th><th>Ratio</th></tr>
