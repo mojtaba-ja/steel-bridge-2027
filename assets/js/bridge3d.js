@@ -66,8 +66,10 @@ export async function bridgeViewer(box, opts = {}) {
   grid.position.y = groundY + 0.02; grid.material.transparent = true; grid.material.opacity = dark ? 0.55 : 0.7; scene.add(grid);
 
   // STAAD view: deformed line model coloured by displacement, nodes, supports, deck loads
-  const caseId = String(D.worst_case), dsp = D.cases[caseId].d;
-  let dmax = 0; for (const v of Object.values(dsp)) dmax = Math.max(dmax, Math.hypot(...v));
+  const CASES = { v: { id: String(D.worst_case), amp: opts.exaggerate || 40 }, h: { id: '2', amp: 150 } };
+  let caseKey = 'v', dsp = D.cases[CASES.v.id].d, dmax = 0, showLoad = true;
+  const dmaxOf = d => { let m = 0; for (const v of Object.values(d)) m = Math.max(m, Math.hypot(...v)); return m; };
+  dmax = dmaxOf(dsp);
   const linePos = [], lineCol = [], lineIdx = [];
   for (const m of D.members) for (const j of [m.a, m.b]) { linePos.push(0, 0, 0); const c = heat(Math.hypot(...(dsp[j] || [0, 0, 0])) / dmax); lineCol.push(c.r, c.g, c.b); lineIdx.push(String(j)); }
   const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(linePos, 3)); lg.setAttribute('color', new THREE.Float32BufferAttribute(lineCol, 3));
@@ -87,12 +89,26 @@ export async function bridgeViewer(box, opts = {}) {
     cone.position.copy(P[s]).add(new THREE.Vector3(0, -2.5, 0)); staad.add(cone);
   }
   const loads = [[120, 156, '1,550 lb'], [78, 114, '1,050 lb']];  // decking units for the worst load spot (rule 11.5)
-  const labels = [];
+  const labels = [], vLoad = new THREE.Group(), hLoad = new THREE.Group(); staad.add(vLoad, hLoad);
   for (const [x0, x1, txt] of loads) {
     const deck = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, 1.2, 42), new THREE.MeshStandardMaterial({ color: 0x9aa7b8, transparent: true, opacity: 0.55 }));
-    deck.position.set((x0 + x1) / 2 - 134.4, 22.4 - 26.75, 0); staad.add(deck);
-    for (const z of [-12, 12]) staad.add(new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3((x0 + x1) / 2 - 134.4, 22.4 - 26.75 + 22, z), 20, 0xd7191c, 5, 3));
-    labels.push({ p: new THREE.Vector3((x0 + x1) / 2 - 134.4, 22.4 - 26.75 + 25, 0), text: txt, mode: 'staad' });
+    deck.position.set((x0 + x1) / 2 - 134.4, 22.4 - 26.75, 0); vLoad.add(deck);
+    for (const z of [-12, 12]) vLoad.add(new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3((x0 + x1) / 2 - 134.4, 22.4 - 26.75 + 22, z), 20, 0xd7191c, 5, 3));
+    labels.push({ p: new THREE.Vector3((x0 + x1) / 2 - 134.4, 22.4 - 26.75 + 25, 0), text: txt, mode: 'staad', cs: 'v' });
+  }
+  // sideways pull: 50 lb at 11 ft 6 in from the west end, on the south stringer (rule 11.4)
+  hLoad.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(138 - 134.4, 21 - 26.75, 19.5), 24, 0xd7191c, 6, 3.5));
+  labels.push({ p: new THREE.Vector3(138 - 134.4, 21 - 26.75 + 5, 46), text: '50 lb sideways', mode: 'staad', cs: 'h' });
+  function recolor() {
+    defo.forEach((t, i) => { const m = D.members[i], da = dsp[m.a] || [0, 0, 0], db = dsp[m.b] || [0, 0, 0];
+      const c = heat(0.5 * (Math.hypot(...da) + Math.hypot(...db)) / dmax); t.mesh.material.color.copy(c); t.mesh.material.emissive.copy(c); });
+  }
+  function setCase(k) {
+    caseKey = k; dsp = D.cases[CASES[k].id].d; dmax = dmaxOf(dsp); recolor();
+    vLoad.visible = k === 'v'; hLoad.visible = k === 'h'; t0 = performance.now();
+    (opts.caseButtons || []).forEach(b => b.classList.toggle('on', b.dataset.case === k));
+    if (opts.legend) opts.legend.innerHTML = (k === 'v' ? 'Load on and off. Shape 40 times larger than real, elastic:' : 'Pull on and off. Shape 150 times larger than real, elastic:') +
+      `<span class="scale"></span>0 to ${dmax.toFixed(2)} in`;
   }
   function deform(s) {
     const pa = lg.attributes.position.array, ga = ghost.geometry.attributes.position.array;
@@ -133,7 +149,10 @@ export async function bridgeViewer(box, opts = {}) {
     t0 = performance.now();
   }
   (opts.modeButtons || []).forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
-  setMode(mode);
+  (opts.caseButtons || []).forEach(b => b.addEventListener('click', () => { if (mode !== 'staad') setMode('staad'); setCase(b.dataset.case); }));
+  (opts.stateButtons || []).forEach(b => b.addEventListener('click', () => { showLoad = b.dataset.state === 'after'; t0 = performance.now();
+    (opts.stateButtons || []).forEach(x => x.classList.toggle('on', x === b)); }));
+  setMode(mode); setCase('v');
 
   // tooltip
   const tip = opts.tip; const ray = new THREE.Raycaster(), mouse = new THREE.Vector2(); let hover = null;
@@ -172,7 +191,7 @@ export async function bridgeViewer(box, opts = {}) {
   const amp = opts.exaggerate || 40; let base = null;
   function frame(now) {
     requestAnimationFrame(frame);
-    if (mode === 'staad') deform(amp * 0.5 * (1 - Math.cos(Math.min(1, (now - t0) / 1600) * Math.PI)) * (0.85 + 0.15 * Math.cos((now - t0) / 700)));
+    if (mode === 'staad') deform(showLoad ? CASES[caseKey].amp * 0.5 * (1 - Math.cos((now - t0) / 3200 * 2 * Math.PI)) : 0);   // load on, load off: elastic
     ring.scale.setScalar(1 + 0.18 * Math.sin(now / 300)); ring.lookAt(camera.position);
     if (sway) {                                       // slow look left and right around the start view
       const off = camera.position.clone().sub(controls.target), sp = new THREE.Spherical().setFromVector3(off);
@@ -181,7 +200,7 @@ export async function bridgeViewer(box, opts = {}) {
     }
     controls.update(); renderer.render(scene, camera);
     const w = box.clientWidth, h = box.clientHeight;
-    labels.forEach((L, i) => { const d = labDivs[i]; if (L.mode !== mode) { d.style.display = 'none'; return; }
+    labels.forEach((L, i) => { const d = labDivs[i]; if (L.mode !== mode || (L.cs && L.cs !== caseKey)) { d.style.display = 'none'; return; }
       v3.copy(L.p).project(camera); d.style.display = v3.z < 1 ? '' : 'none';
       d.style.left = ((v3.x + 1) / 2 * w) + 'px'; d.style.top = ((1 - v3.y) / 2 * h - 8) + 'px'; });
   }

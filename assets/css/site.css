@@ -35,6 +35,8 @@ img { max-width: 100%; display: block; }
 .fact b { display: block; font-size: 20px; line-height: 1.1; }
 .fact span { font-size: 12.5px; color: #b9c7da; }
 .hero .modes { position: absolute; right: 18px; top: 18px; display: flex; gap: 6px; z-index: 3; }
+.hero .modes2 { position: absolute; right: 18px; top: 62px; display: none; gap: 6px; z-index: 3; flex-wrap: wrap; justify-content: flex-end; max-width: 520px; }
+.hero.staad .modes2 { display: flex; }
 .pill { font: inherit; font-size: 14px; font-weight: 600; color: #dfe8f5; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18);
   padding: 7px 12px; border-radius: 999px; cursor: pointer; }
 .pill.on { background: #fff; color: var(--navy); border-color: #fff; }
@@ -43,7 +45,7 @@ img { max-width: 100%; display: block; }
 .tip b { display: block; font-size: 14px; }
 .hint { position: absolute; right: 18px; bottom: 18px; color: #9fb1c8; font-size: 12.5px; pointer-events: none; text-align: right; }
 @media (max-width: 760px) { .hero .facts .in { gap: 6px; } .fact { padding: 6px 10px; } .fact b { font-size: 16px; } .hint { display: none; }
-  .hero .modes { top: auto; bottom: 150px; right: 12px; left: 12px; } }
+  .hero .modes { top: auto; bottom: 150px; right: 12px; left: 12px; } .hero .modes2 { top: auto; bottom: 196px; left: 12px; right: 12px; justify-content: flex-start; } }
 
 /* sections */
 main { max-width: 1200px; margin: 0 auto; padding: 0 18px 60px; }
