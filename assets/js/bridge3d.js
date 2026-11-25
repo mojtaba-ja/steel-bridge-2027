@@ -91,11 +91,11 @@ export async function bridgeViewer(box, opts = {}) {
   const Lft = parseFloat((D.cases[String(D.worst_case)].title.match(/L ([\d.]+) FT/) || [0, 6.5])[1]);   // D2 spot of the worst case
   const loads = [[120, 156, '1,550 lb'], [Lft * 12, Lft * 12 + 36, '1,050 lb']];  // decking units (rule 11.5): D1 at 10 ft, D2 at L
   const labels = [], vLoad = new THREE.Group(), hLoad = new THREE.Group(); staad.add(vLoad, hLoad);
-  for (const [x0, x1, txt] of loads) {
+  for (const [x0, x1, txt, k] of loads.map((l, i) => [...l, i])) {
     const deck = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, 1.2, 42), new THREE.MeshStandardMaterial({ color: 0x9aa7b8, transparent: true, opacity: 0.55 }));
     deck.position.set((x0 + x1) / 2 - 134.4, 22.4 - 26.75, 0); vLoad.add(deck);
     for (const z of [-12, 12]) vLoad.add(new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3((x0 + x1) / 2 - 134.4, 22.4 - 26.75 + 22, z), 20, 0xd7191c, 5, 3));
-    labels.push({ p: new THREE.Vector3((x0 + x1) / 2 - 134.4, 22.4 - 26.75 + 25, 0), text: txt, mode: 'staad', cs: 'v' });
+    labels.push({ p: new THREE.Vector3((x0 + x1) / 2 - 134.4, 22.4 - 26.75 + 25 + 9 * k, 0), text: txt, mode: 'staad', cs: 'v' });
   }
   // sideways pull: 50 lb at 11 ft 6 in from the west end, on the south stringer (rule 11.4)
   hLoad.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(138 - 134.4, 21 - 26.75, 19.5), 24, 0xd7191c, 6, 3.5));
@@ -108,7 +108,7 @@ export async function bridgeViewer(box, opts = {}) {
     caseKey = k; dsp = D.cases[CASES[k].id].d; dmax = dmaxOf(dsp); recolor();
     vLoad.visible = k === 'v'; hLoad.visible = k === 'h'; t0 = performance.now();
     (opts.caseButtons || []).forEach(b => b.classList.toggle('on', b.dataset.case === k));
-    if (opts.legend) opts.legend.innerHTML = (k === 'v' ? 'Drawn 40 times larger' : 'Drawn 150 times larger') +
+    if (opts.legend) opts.legend.innerHTML = (k === 'v' ? 'Shape x40' : 'Shape x150') +
       `<span class="scale"></span>0 to ${dmax.toFixed(2)} in`;
   }
   function deform(s) {

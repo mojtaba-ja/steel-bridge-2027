@@ -55,6 +55,7 @@ h2 { font-size: clamp(24px, 3vw, 34px); line-height: 1.15; margin: 6px 0 12px; l
 h3 { font-size: 19px; margin: 0 0 6px; }
 p.sub { color: var(--mute); max-width: 760px; margin: 0 0 20px; font-size: 17px; }
 .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid3 > *, .grid2 > * { min-width: 0; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: center; }
 @media (max-width: 900px) { .grid3, .grid2 { grid-template-columns: 1fr; } }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
@@ -93,6 +94,7 @@ table.t { width: 100%; border-collapse: collapse; background: #fff; border: 1px 
 table.t th, table.t td { padding: 9px 12px; border-bottom: 1px solid var(--line); text-align: left; }
 table.t th { background: #f0f3f7; font-size: 13px; text-transform: uppercase; letter-spacing: .4px; color: var(--mute); }
 table.t td.num { font-variant-numeric: tabular-nums; text-align: right; }
+table.t small.lim { display: none; }
 .bar { height: 8px; border-radius: 4px; background: #e6ebf1; overflow: hidden; }
 .bar i { display: block; height: 100%; background: var(--green); }
 
@@ -114,3 +116,25 @@ footer a { color: #fff; }
 .loadbar span b { color: var(--ink); font-size: 18px; }
 .loadview .viewer .pill { color: #dfe8f5; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.22); }
 .loadview .viewer .pill.on { background: #fff; color: var(--navy); border-color: #fff; }
+
+/* phones */
+@media (max-width: 760px) {
+  .hero { height: 76vh; min-height: 540px; }
+  .hero .copy { padding-top: 22px; }
+  .hero h1 { font-size: 30px; }
+  .hero .facts .in { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .fact { padding: 6px 10px; } .fact b { font-size: 16px; } .fact span { font-size: 11.5px; }
+  section.block { padding: 36px 0 4px; }
+  .loadview .viewer { height: 48vh; min-height: 320px; }
+  .loadview .modes { left: 8px; right: 8px; top: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .loadview .seg { display: flex; width: 100%; }
+  .loadview .seg .pill { flex: 1; padding: 7px 6px; font-size: 13px; }
+  .loadview .viewer .legend { font-size: 11px; left: 8px; right: 8px; bottom: 8px; }
+  .loadbar span { min-width: 0; font-size: 14px; }
+  table.t { font-size: 13.5px; }
+  table.t th, table.t td { padding: 8px 8px; }
+  table.t td:nth-child(n+2), table.t th:nth-child(n+2) { white-space: nowrap; }
+  table.t td:nth-child(2), table.t th:nth-child(2) { display: none; }
+  table.t small.lim { display: block; color: var(--mute); font-size: 12px; margin-top: 2px; }
+  .card .pad { padding: 12px; }
+}

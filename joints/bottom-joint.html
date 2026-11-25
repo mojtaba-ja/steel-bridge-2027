@@ -7,7 +7,7 @@
 <title>Build guide: bottom joint at each post | FAU Steel Bridge 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/site.css?v=8">
+<link rel="stylesheet" href="../assets/css/site.css?v=10">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b2545'/%3E%3Cpath d='M4 22h24M7 22l5-10h8l5 10M12 12l4 10 4-10' stroke='%23f2a541' stroke-width='2.4' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
   .head { background: linear-gradient(180deg, #0b2545, #13315c); color: #fff; padding: 22px 18px 20px; }
@@ -15,6 +15,7 @@
   .head h1 { margin: 4px 0 4px; font-size: clamp(22px, 3vw, 32px); letter-spacing: -.3px; }
   .head p { margin: 0; color: #c9d6e8; }
   .guide { display: grid; grid-template-columns: 1fr 330px; gap: 14px; margin-top: 16px; }
+  .guide > * { min-width: 0; }
   @media (max-width: 900px) { .guide { grid-template-columns: 1fr; } }
   .stage { position: relative; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; height: min(66vh, 650px); touch-action: none; box-shadow: var(--shadow); }
   @media (max-width: 900px) { .stage { height: 54vh; } }
@@ -46,11 +47,38 @@
   .cap { font-size: 21px; line-height: 1.3; font-weight: 650; margin: 10px 0 4px; min-height: 2.6em; }
   .sub2 { font-size: 15px; color: var(--mute); min-height: 1.4em; }
   .btns { display: flex; gap: 8px; margin-top: 12px; }
+  .mcap { display: none; }
   .btns button { font: inherit; font-size: 17px; font-weight: 650; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 10px; padding: 12px 14px; cursor: pointer; flex: 1; }
   .btns button.primary { background: var(--navy); border-color: var(--navy); color: #fff; flex: 1.6; }
   .btns button:disabled { opacity: .4; cursor: default; }
-  .list { margin-top: 12px; max-height: 48vh; overflow: auto; border-top: 1px solid var(--line); padding-top: 6px; }
-  @media (max-width: 900px) { .list { max-height: none; } }
+  .list { margin-top: 6px; max-height: 48vh; overflow: auto; padding-top: 2px; }
+  details.steps { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 8px; }
+  details.steps summary { cursor: pointer; font-weight: 650; font-size: 14px; color: var(--navy2); list-style: none; padding: 4px 0; }
+  details.steps summary::after { content: ' \25BE'; }
+  details.steps[open] summary::after { content: ' \25B4'; }
+  @media (max-width: 900px) {
+    .list { max-height: none; }
+    main { padding-bottom: 90px; }
+    .stage { height: 52vh; min-height: 300px; }
+    .guide { gap: 10px; margin-top: 10px; }
+    .panel { padding: 12px 14px; }
+    .cap { font-size: 18px; min-height: 0; margin: 6px 0 2px; }
+    .sub2 { font-size: 14px; min-height: 0; }
+    .ctrl { position: fixed; left: 0; right: 0; bottom: 0; padding: 8px 12px calc(10px + env(safe-area-inset-bottom));
+            background: rgba(255,255,255,.98); box-shadow: 0 -2px 12px rgba(0,0,0,.12); z-index: 30; }
+    .ctrl .mcap { display: block; font-size: 14px; font-weight: 650; line-height: 1.3; margin: 0 2px 8px; color: var(--ink); }
+    .ctrl .btns { margin: 0; }
+    .ctrl .btns button { padding: 11px 10px; font-size: 16px; }
+    main { padding-bottom: 140px; }
+    body .legend2 { flex-wrap: nowrap; overflow-x: auto; gap: 4px 12px; font-size: 12px; margin-top: 8px; white-space: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    body .legend2::-webkit-scrollbar { display: none; }
+    body .head p { display: none; }
+    .panel .cap { display: none; }
+    .hint2 { font-size: 11px; left: 8px; right: 8px; bottom: 6px; text-align: center; }
+    .head { padding: 16px 16px 14px; } .head h1 { font-size: 21px; } .head p { font-size: 14px; }
+    .vtools { left: 8px; top: 8px; } .vtools button { padding: 7px 11px; font-size: 13px; }
+    .card2 { top: auto; bottom: 8px; right: 8px; left: 8px; width: auto; max-height: 60%; overflow: auto; }
+  }
   .list h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .5px; color: var(--mute); margin: 10px 0 4px; }
   .list a { display: block; padding: 5px 8px; border-radius: 6px; color: var(--ink); text-decoration: none; font-size: 14px; }
   .list a.on { background: #e8eef6; font-weight: 650; }
@@ -84,8 +112,7 @@
       <div class="stage" id="viewer">
         <canvas id="c"></canvas>
         <div id="load">Loading the 3D model...</div>
-        <div class="hint2">Drag to turn &middot; pinch or scroll to zoom &middot; two fingers to move</div>
-        <div class="tapnote">Tap a part for its sizes</div>
+        <div class="hint2">Drag to turn &middot; pinch to zoom &middot; tap a part for its sizes</div>
         <div class="vtools"><button id="measure" title="Tap two points to measure">&#128207; Measure</button></div>
         <div class="card2" id="card"><button class="x" id="cardx" aria-label="Close">&times;</button><h4 id="ctitle"></h4><table id="ctable"></table></div>
       </div>
@@ -99,8 +126,8 @@
       <div class="top"><span class="chip" id="chip">Cut</span><span class="tool" id="tool"></span><span class="count" id="count"></span></div>
       <div class="cap" id="cap"></div>
       <div class="sub2" id="sub"></div>
-      <div class="btns"><button id="prev">&#9664; Back</button><button id="replay" title="Play this step again">&#8635;</button><button id="next" class="primary">Next &#9654;</button></div>
-      <div class="list" id="list"></div>
+      <div class="ctrl"><div class="mcap" id="mcap"></div><div class="btns"><button id="prev">&#9664; Back</button><button id="replay" title="Play this step again">&#8635;</button><button id="next" class="primary">Next &#9654;</button></div></div>
+      <details class="steps" id="stepsbox"><summary>All 29 steps</summary><div class="list" id="list"></div></details>
     </div>
   </div>
   <p style="margin:18px 2px 0"><a href="files/Bottom-joint-sheets.pdf"><b>Print the sheets (PDF) &rarr;</b></a></p>
@@ -394,7 +421,7 @@ S('Weld', 'weld', 'Bolt each pair of diagonal plates on a 5/32 in spacer. Set th
   add(ctx, EDGE_FIN.slice(0, 5));
   for (const s of ['R', 'L']) { const asm = ctx.add(new THREE.Group()), a = part('diag plate ' + s + '1'), b = part('diag plate ' + s + '2'); asm.add(part('spacer ' + s), a, b);
     slide(ctx, a, [0, 0, 1.2], 0.0, 0.25); slide(ctx, b, [0, 0, -1.2], 0.0, 0.25); boltIn(newSubCtx(ctx, asm), 'spacer bolt ' + s, 0.28, 0.58); slide(ctx, asm, [0, 3.0, 0], 0.62, 0.95); }
-  for (const sgn of [1, -1]) ctx.dim(new THREE.Vector3(0, 2.6, 0.25), new THREE.Vector3(2 * sgn, 2.6, 0.25), '2 in', new THREE.Vector3(0, 0.7, 0)); });
+  for (const sgn of [1, -1]) ctx.dim(new THREE.Vector3(0, 2.6, 0.25), new THREE.Vector3(2 * sgn, 2.6, 0.25), '2 in', new THREE.Vector3(0, sgn > 0 ? 0.6 : 1.3, 0)); });
 S('Weld', 'weld', 'Weld the outer face of each diagonal plate to the chord. Then remove the spacers.', '', 'joint', ctx => {
   add(ctx, EDGE_FIN); const sps = ['R', 'L'].map(s => ctx.add(part('spacer ' + s))); weldAnim(ctx, ['diag plates R', 'diag plates L'], 0.03, 0.5);
   ['R', 'L'].forEach(s => boltOut(ctx, 'spacer bolt ' + s, 0.55, 0.78)); sps.forEach(o => { slide(ctx, o, [0, 4, 0], 0.8, 0.97, true); hideAfter(ctx, o, 0.97); }); });
@@ -513,9 +540,11 @@ function go(i) {
   const chip = document.getElementById('chip'); chip.textContent = st.sec; chip.style.background = SEC[st.sec];
   document.getElementById('tool').textContent = TOOL[st.tool] || ''; document.getElementById('count').textContent = `Step ${i + 1} of ${STEPS.length}`;
   document.getElementById('cap').textContent = st.cap; document.getElementById('sub').textContent = st.sub || '';
+  document.getElementById('mcap').textContent = `${i + 1}/${STEPS.length}  ${st.cap}`;
   document.getElementById('prev').disabled = i === 0; document.getElementById('next').disabled = i === STEPS.length - 1;
   document.querySelectorAll('.list a').forEach((a, k) => a.classList.toggle('on', k === i));
-  const on = document.querySelector('.list a.on'); if (on && window.innerWidth > 900) on.scrollIntoView({ block: 'nearest' });
+  const on = document.querySelector('.list a.on'), lst = document.getElementById('list');
+  if (on && window.innerWidth > 900) lst.scrollTop = Math.max(0, on.offsetTop - lst.offsetTop - lst.clientHeight / 2);
   history.replaceState(null, '', '#step-' + (i + 1));
 }
 function buildList() {
@@ -524,7 +553,7 @@ function buildList() {
   STEPS.forEach((s, i) => {
     if (s.sec !== sec) { sec = s.sec; const h = document.createElement('h4'); h.textContent = H[sec]; L.appendChild(h); }
     const a = document.createElement('a'); a.href = '#step-' + (i + 1); a.textContent = `${i + 1}. ${s.cap}`;
-    a.onclick = e => { e.preventDefault(); go(i); if (window.innerWidth <= 900) viewer.scrollIntoView({ behavior: 'smooth' }); }; L.appendChild(a);
+    a.onclick = e => { e.preventDefault(); go(i); if (window.innerWidth <= 900) { document.getElementById('stepsbox').open = false; viewer.scrollIntoView({ behavior: 'smooth' }); } }; L.appendChild(a);
   });
 }
 document.getElementById('prev').onclick = () => go(cur - 1);
@@ -543,6 +572,7 @@ function frame(now) {
 }
 fetch('../assets/models/web_bottom.json').then(r => r.json()).then(d => {
   DATA = d; document.getElementById('load').remove(); resize(); buildList();
+  if (window.innerWidth > 900) document.getElementById('stepsbox').open = true;
   const m = location.hash.match(/step-(\d+)/); go(m ? +m[1] - 1 : 0); requestAnimationFrame(frame);
   if (DEBUG) { window.__go = go; window.__canvas = canvas; window.__n = STEPS.length; window.__step = () => STEP; window.__bbox = bbox; }
 }).catch(e => { document.getElementById('load').textContent = 'Could not load the model: ' + e; });
