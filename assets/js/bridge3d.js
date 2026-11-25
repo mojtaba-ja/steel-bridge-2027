@@ -88,7 +88,8 @@ export async function bridgeViewer(box, opts = {}) {
     const cone = new THREE.Mesh(new THREE.ConeGeometry(3.2, 5, 4), new THREE.MeshStandardMaterial({ color: 0xf2a541 }));
     cone.position.copy(P[s]).add(new THREE.Vector3(0, -2.5, 0)); staad.add(cone);
   }
-  const loads = [[120, 156, '1,550 lb'], [78, 114, '1,050 lb']];  // decking units for the worst load spot (rule 11.5)
+  const Lft = parseFloat((D.cases[String(D.worst_case)].title.match(/L ([\d.]+) FT/) || [0, 6.5])[1]);   // D2 spot of the worst case
+  const loads = [[120, 156, '1,550 lb'], [Lft * 12, Lft * 12 + 36, '1,050 lb']];  // decking units (rule 11.5): D1 at 10 ft, D2 at L
   const labels = [], vLoad = new THREE.Group(), hLoad = new THREE.Group(); staad.add(vLoad, hLoad);
   for (const [x0, x1, txt] of loads) {
     const deck = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, 1.2, 42), new THREE.MeshStandardMaterial({ color: 0x9aa7b8, transparent: true, opacity: 0.55 }));
