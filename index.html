@@ -8,7 +8,7 @@
 <meta name="description" content="The FAU Student Steel Bridge 2027 design in 3D: analysis, true-size joints and a step-by-step build guide.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css?v=5">
+<link rel="stylesheet" href="assets/css/site.css?v=8">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b2545'/%3E%3Cpath d='M4 22h24M7 22l5-10h8l5 10M12 12l4 10 4-10' stroke='%23f2a541' stroke-width='2.4' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E">
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
@@ -29,19 +29,32 @@
     <p class="lead">Every tube at its real size. Drag to turn it.</p>
     <a href="joints/bottom-joint.html" style="pointer-events:auto;display:inline-block;margin-top:18px;background:#f2a541;color:#0b2545;font-weight:700;padding:12px 20px;border-radius:999px;text-decoration:none">Open the build guide &rarr;</a>
   </div></div>
-  <div class="modes"><button class="pill on" data-mode="steel">Steel</button><button class="pill" data-mode="staad">STAAD analysis</button></div>
-  <div class="modes2"><button class="pill on" data-case="v">2,600 lb down</button><button class="pill" data-case="h">50 lb sideways</button><button class="pill" data-state="before">Before</button><button class="pill on" data-state="after">Under load</button></div>
   <div class="tip" id="tip"></div>
   <div class="facts"><div class="in">
     <div class="fact"><b>22 ft 5 in</b><span>span</span></div>
     <div class="fact"><b>236 lb</b><span>steel, from the model</span></div>
-    <div class="fact"><b>0.5 in</b><span>deflection under 2,600 lb (model)</span></div>
+    <div class="fact"><b>0.34 in</b><span>most deflection, 2,600 lb (model)</span></div>
     <div class="fact"><b>79</b><span>pieces</span></div>
   </div></div>
   <div class="hint">Tap a member to see its size</div>
 </header>
 
 <main>
+  <section class="block">
+    <h2>Under load</h2>
+    <div class="loadview">
+      <div class="viewer" id="lv">
+        <canvas></canvas>
+        <div class="modes">
+          <span class="seg"><button class="pill on" data-case="v">2,600 lb down</button><button class="pill" data-case="h">50 lb sideways</button></span>
+          <span class="seg"><button class="pill" data-state="before">Before</button><button class="pill on" data-state="after">Under load</button></span>
+        </div>
+        <div class="legend" id="lvlg"></div>
+      </div>
+      <div class="loadbar"><input type="range" min="0" max="100" value="0" id="lvs" aria-label="Load"><span id="lvr"></span></div>
+    </div>
+  </section>
+
   <section class="block">
     <h2>Why the trusses are above the deck</h2>
     <div class="grid2">
@@ -88,12 +101,13 @@
 </div></footer>
 
 <script type="module">
-import { bridgeViewer } from './assets/js/bridge3d.js?v=5';
-const heroEl = document.getElementById('hero');
-heroEl.querySelectorAll('.pill[data-mode]').forEach(b => b.addEventListener('click', () => heroEl.classList.toggle('staad', b.dataset.mode === 'staad')));
+import { bridgeViewer } from './assets/js/bridge3d.js?v=8';
 const hero = document.getElementById('hero');
-bridgeViewer(hero, { dark: true, tip: document.getElementById('tip'), modeButtons: [...hero.querySelectorAll('.pill[data-mode]')],
-  caseButtons: [...hero.querySelectorAll('.pill[data-case]')], stateButtons: [...hero.querySelectorAll('.pill[data-state]')],
+const lv = document.getElementById('lv');
+bridgeViewer(lv, { dark: true, mode: 'staad', autoRotate: false, view: [0.22, 0.3, -1.0], zoom: 0.56, zoomMobile: 1.0, targetY: -2,
+  caseButtons: [...lv.querySelectorAll('.pill[data-case]')], stateButtons: [...lv.querySelectorAll('.pill[data-state]')],
+  legend: document.getElementById('lvlg'), slider: document.getElementById('lvs'), readout: document.getElementById('lvr') });
+bridgeViewer(hero, { dark: true, tip: document.getElementById('tip'),
   view: [0.66, 0.36, -0.72], zoom: 0.8, zoomMobile: 1.1, targetY: 2, shiftX: 0.2, shiftY: -0.08, shiftYMobile: 0.1 });
 </script>
 </body>

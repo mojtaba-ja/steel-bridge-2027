@@ -99,3 +99,18 @@ table.t td.num { font-variant-numeric: tabular-nums; text-align: right; }
 footer { background: var(--navy); color: #b9c7da; padding: 28px 18px; margin-top: 40px; font-size: 14px; }
 footer .in { max-width: 1200px; margin: 0 auto; display: flex; gap: 18px; flex-wrap: wrap; justify-content: space-between; }
 footer a { color: #fff; }
+
+/* under-load section */
+.loadview .viewer { height: min(64vh, 580px); border: none; background: radial-gradient(1100px 520px at 55% 35%, #1f4d82 0%, #0b2545 62%, #071a33 100%); }
+.loadview .viewer .legend { background: rgba(255,255,255,.92); color: var(--ink); }
+.loadview .modes { gap: 10px; }
+.seg { display: inline-flex; gap: 0; border-radius: 999px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.seg .pill { border-radius: 0; margin: 0; }
+.seg .pill:first-child { border-radius: 999px 0 0 999px; }
+.seg .pill:last-child { border-radius: 0 999px 999px 0; border-left: none; }
+.loadbar { display: flex; align-items: center; gap: 14px; margin: 12px 4px 0; flex-wrap: wrap; }
+.loadbar input[type=range] { flex: 1 1 260px; accent-color: #d7191c; height: 28px; }
+.loadbar span { font-size: 15px; color: var(--mute); min-width: 280px; }
+.loadbar span b { color: var(--ink); font-size: 18px; }
+.loadview .viewer .pill { color: #dfe8f5; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.22); }
+.loadview .viewer .pill.on { background: #fff; color: var(--navy); border-color: #fff; }

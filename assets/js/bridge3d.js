@@ -76,7 +76,7 @@ export async function bridgeViewer(box, opts = {}) {
   const defo = D.members.map(m => {
     const da = dsp[m.a] || [0, 0, 0], db = dsp[m.b] || [0, 0, 0];
     const c = heat(0.5 * (Math.hypot(...da) + Math.hypot(...db)) / dmax);
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 0.9, 0.9), new THREE.MeshStandardMaterial({ color: c, metalness: 0.0, roughness: 0.7, emissive: c, emissiveIntensity: 0.35, envMapIntensity: 0.25 }));
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1.25, 1.25), new THREE.MeshBasicMaterial({ color: c, toneMapped: false }));
     staad.add(mesh); return { mesh, a: String(m.a), b: String(m.b) };
   });
   const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _x = new THREE.Vector3(1, 0, 0);
@@ -101,13 +101,13 @@ export async function bridgeViewer(box, opts = {}) {
   labels.push({ p: new THREE.Vector3(138 - 134.4, 21 - 26.75 + 5, 46), text: '50 lb sideways', mode: 'staad', cs: 'h' });
   function recolor() {
     defo.forEach((t, i) => { const m = D.members[i], da = dsp[m.a] || [0, 0, 0], db = dsp[m.b] || [0, 0, 0];
-      const c = heat(0.5 * (Math.hypot(...da) + Math.hypot(...db)) / dmax); t.mesh.material.color.copy(c); t.mesh.material.emissive.copy(c); });
+      const c = heat(0.5 * (Math.hypot(...da) + Math.hypot(...db)) / dmax); t.mesh.material.color.copy(c); });
   }
   function setCase(k) {
     caseKey = k; dsp = D.cases[CASES[k].id].d; dmax = dmaxOf(dsp); recolor();
     vLoad.visible = k === 'v'; hLoad.visible = k === 'h'; t0 = performance.now();
     (opts.caseButtons || []).forEach(b => b.classList.toggle('on', b.dataset.case === k));
-    if (opts.legend) opts.legend.innerHTML = (k === 'v' ? 'Load on and off. Shape 40 times larger than real, elastic:' : 'Pull on and off. Shape 150 times larger than real, elastic:') +
+    if (opts.legend) opts.legend.innerHTML = (k === 'v' ? 'Drawn 40 times larger' : 'Drawn 150 times larger') +
       `<span class="scale"></span>0 to ${dmax.toFixed(2)} in`;
   }
   function deform(s) {
@@ -150,8 +150,12 @@ export async function bridgeViewer(box, opts = {}) {
   }
   (opts.modeButtons || []).forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
   (opts.caseButtons || []).forEach(b => b.addEventListener('click', () => { if (mode !== 'staad') setMode('staad'); setCase(b.dataset.case); }));
-  (opts.stateButtons || []).forEach(b => b.addEventListener('click', () => { showLoad = b.dataset.state === 'after'; t0 = performance.now();
-    (opts.stateButtons || []).forEach(x => x.classList.toggle('on', x === b)); }));
+  let manual = false;
+  const setState = st => { showLoad = st === 'after'; manual = false; t0 = performance.now();
+    (opts.stateButtons || []).forEach(x => x.classList.toggle('on', x.dataset.state === st)); };
+  (opts.stateButtons || []).forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+  if (opts.slider) opts.slider.addEventListener('input', () => { manual = true; showLoad = true;
+    (opts.stateButtons || []).forEach(x => x.classList.toggle('on', x.dataset.state === 'after')); });
   setMode(mode); setCase('v');
 
   // tooltip
@@ -191,7 +195,12 @@ export async function bridgeViewer(box, opts = {}) {
   const amp = opts.exaggerate || 40; let base = null;
   function frame(now) {
     requestAnimationFrame(frame);
-    if (mode === 'staad') deform(showLoad ? CASES[caseKey].amp * 0.5 * (1 - Math.cos((now - t0) / 3200 * 2 * Math.PI)) : 0);   // load on, load off: elastic
+    if (mode === 'staad') {                          // load on, load off (elastic); the slider holds any load level
+      const f = !showLoad ? 0 : manual ? +opts.slider.value / 100 : 0.5 * (1 - Math.cos((now - t0) / 3600 * 2 * Math.PI));
+      deform(CASES[caseKey].amp * f);
+      if (opts.slider && !manual) opts.slider.value = Math.round(f * 100);
+      if (opts.readout) opts.readout.innerHTML = `<b>${(dmax * f).toFixed(2)} in</b> ${caseKey === 'v' ? 'deflection' : 'sway'} at ${Math.round(f * 100)}% of the ${caseKey === 'v' ? '2,600 lb load' : '50 lb pull'}`;
+    }
     ring.scale.setScalar(1 + 0.18 * Math.sin(now / 300)); ring.lookAt(camera.position);
     if (sway) {                                       // slow look left and right around the start view
       const off = camera.position.clone().sub(controls.target), sp = new THREE.Spherical().setFromVector3(off);
