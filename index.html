@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>FAU Steel Bridge 2027</title>
+<meta name="description" content="The FAU Student Steel Bridge 2027 design in 3D: analysis, true-size joints and a step-by-step build guide.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css?v=2">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b2545'/%3E%3Cpath d='M4 22h24M7 22l5-10h8l5 10M12 12l4 10 4-10' stroke='%23f2a541' stroke-width='2.4' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+               "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/" } }
+</script>
+</head>
+<body>
+<nav class="nav"><div class="in">
+  <a class="brand" href="./"><svg width="28" height="28" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#13315c"/><path d="M4 22h24M7 22l5-10h8l5 10M12 12l4 10 4-10" stroke="#f2a541" stroke-width="2.4" fill="none" stroke-linejoin="round"/></svg><span>FAU Steel Bridge 2027</span></a>
+  <div class="links"><a href="./" class="on">Bridge</a><a href="design.html">Design</a><a href="joints/bottom-joint.html">Build guide</a></div>
+</div></nav>
+
+<header class="hero" id="hero">
+  <canvas></canvas>
+  <div class="copy"><div class="in">
+    <div class="eyebrow">Student Steel Bridge Competition 2027</div>
+    <h1>A through truss built for the 2027 river crossing</h1>
+    <p class="lead">Every tube at its real size. Drag to turn it.</p>
+    <a href="joints/bottom-joint.html" style="pointer-events:auto;display:inline-block;margin-top:18px;background:#f2a541;color:#0b2545;font-weight:700;padding:12px 20px;border-radius:999px;text-decoration:none">Open the build guide &rarr;</a>
+  </div></div>
+  <div class="modes"><button class="pill on" data-mode="steel">Steel</button><button class="pill" data-mode="staad">STAAD analysis</button></div>
+  <div class="tip" id="tip"></div>
+  <div class="facts"><div class="in">
+    <div class="fact"><b>22 ft 5 in</b><span>span</span></div>
+    <div class="fact"><b>236 lb</b><span>steel, from the model</span></div>
+    <div class="fact"><b>0.5 in</b><span>deflection under 2,600 lb (model)</span></div>
+    <div class="fact"><b>79</b><span>pieces</span></div>
+  </div></div>
+  <div class="hint">Tap a member to see its size</div>
+</header>
+
+<main>
+  <section class="block">
+    <h2>Why the trusses are above the deck</h2>
+    <div class="grid2">
+      <div>
+        <p class="sub">The deck sits 19 to 22 in up and needs 12 in clear over the river. That leaves about 10 in under it, so the depth goes on top.</p>
+      </div>
+      <div class="card"><div class="pad">
+        <table class="t">
+          <tr><th>Rule (2027)</th><th>Limit</th><th>This bridge</th></tr>
+          <tr><td>Deck height</td><td>19 to 22 in</td><td>21 3/8 in</td></tr>
+          <tr><td>Clearance over the river</td><td>12 in or more</td><td>18 7/8 in</td></tr>
+          <tr><td>Envelope</td><td>5 ft x 5 ft</td><td>4 ft 6 in tall</td></tr>
+          <tr><td>Longest piece, with its plates</td><td>42 in box</td><td>41 5/8 in</td></tr>
+          <tr><td>Sway under 50 lb</td><td>3/4 in (3/8 in bonus)</td><td>0.11 in</td></tr>
+        </table>
+      </div></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>How it was designed</h2>
+    <div class="pipe">
+      <div class="st"><div class="n">1. Analysis</div><h3>STAAD.Pro 2026</h3><p>Loads, deflection, member checks.</p></div>
+      <div class="st"><div class="n">2. True-size joints</div><h3>FreeCAD</h3><p>Every plate and bolt at real size.</p></div>
+      <div class="st"><div class="n">3. Drawings</div><h3>SolidWorks 2026</h3><p>Assemblies and shop sheets.</p></div>
+      <div class="st"><div class="n">4. Joint checks</div><h3>AISC 360-22</h3><p>Bolts, plates and welds by hand.</p></div>
+    </div>
+    <p style="margin-top:14px"><a href="design.html"><b>See each step &rarr;</b></a></p>
+  </section>
+
+  <section class="block">
+    <h2>Build guide</h2>
+    <div class="grid3">
+      <a class="card" href="joints/bottom-joint.html">
+        <img src="assets/img/bottom-joint.png" alt="Bottom joint at a post, 3D view" style="background:#fff;aspect-ratio:4/3;object-fit:contain;padding:10px">
+        <div class="pad"><span class="tag">Ready</span><h3 style="margin-top:8px">Bottom joint at each post</h3><p>29 steps in 3D: cut, drill, weld, bolt.</p><span class="more">Open &rarr;</span></div>
+      </a>
+      <div class="card"><div class="pad"><span class="tag">Next</span><h3 style="margin-top:8px">Top joints</h3><p>Diagonals and post tops.</p></div></div>
+      <div class="card"><div class="pad"><span class="tag">Next</span><h3 style="margin-top:8px">Where pieces meet</h3><p>Splices in the chords.</p></div></div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="in">
+  <div>FAU ASCE Student Steel Bridge Team, Florida Atlantic University</div>
+  <div>Models: STAAD.Pro 2026, FreeCAD, SolidWorks 2026 &middot; 3D: three.js</div>
+</div></footer>
+
+<script type="module">
+import { bridgeViewer } from './assets/js/bridge3d.js?v=2';
+const hero = document.getElementById('hero');
+bridgeViewer(hero, { dark: true, tip: document.getElementById('tip'), modeButtons: [...hero.querySelectorAll('.pill')],
+  joints: [{ x: 44.8, y: 19.5, z: -22.75, label: 'Bottom joint: build guide', href: 'joints/bottom-joint.html' }],
+  view: [0.66, 0.36, -0.72], zoom: 0.8, zoomMobile: 1.1, targetY: 2, shiftX: 0.2, shiftY: -0.08, shiftYMobile: 0.1 });
+</script>
+</body>
+</html>
